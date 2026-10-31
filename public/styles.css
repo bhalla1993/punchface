@@ -86,8 +86,8 @@ h1 {
   pointer-events: none;
 }
 
-.note {
-  min-height: 1.4em;
+.note, .status {
+  min-height: 1.2em;
   text-align: center;
   color: var(--accent);
   font-size: 0.95rem;

@@ -4,7 +4,19 @@ compatibility_date = "2026-02-01"
 
 [assets]
 directory = "./public"
+binding = "ASSETS"
 
 [vars]
 FACE_ID = "placeholder-dog"
 DAILY_CAP = "500"
+
+[[durable_objects.bindings]]
+name = "BOARD"
+class_name = "Board"
+
+[[migrations]]
+tag = "v1"
+new_sqlite_classes = ["Board"]
+
+[triggers]
+crons = ["5 0 * * 1"]
