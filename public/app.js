@@ -216,12 +216,18 @@ async function flush() {
       headers: { "content-type": "application/json", "x-country": country },
       body: JSON.stringify({ count, token }),
     });
-    if (!response.ok) throw new Error("punch failed");
+    if (!response.ok) {
+      const error = new Error("punch failed");
+      error.status = response.status;
+      throw error;
+    }
     apply(await response.json());
-  } catch {
+  } catch (error) {
     bump(-count);
     paused = true;
-    status.textContent = "Shared count is paused. You can keep punching.";
+    status.textContent = error.status === 403
+      ? "This punch did not count. The browser check did not pass. You can keep punching."
+      : "This punch did not reach the board. You can keep punching. It will try again.";
   }
 }
 
@@ -236,7 +242,7 @@ async function load() {
     apply(await response.json());
   } catch {
     paused = true;
-    status.textContent = "Shared count is paused. You can keep punching.";
+    status.textContent = "The board did not load. You can keep punching. Scores will show when it answers.";
   }
 }
 
@@ -245,7 +251,7 @@ function apply(data) {
   board = { weekly: data.weekly, alltime: data.alltime };
   note.dataset.full = data.limited ? "1" : "";
   note.textContent = data.limited
-    ? "You can keep punching for fun. These no longer add to the count."
+    ? "You can keep punching for fun. These no longer add to the count. This address has used today's punches. They count again at the next UTC day."
     : "";
   paintCountry();
   render();

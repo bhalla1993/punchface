@@ -29,6 +29,7 @@ const continentBoxes = document.querySelector("#continent-boxes");
 const countryBoxes = document.querySelector("#country-boxes");
 const boxTitle = document.querySelector("#box-title");
 const listNote = document.querySelector("#list-note");
+const boardStatus = document.querySelector("#board-status");
 const statTotal = document.querySelector("#stat-total");
 const statLead = document.querySelector("#stat-lead");
 const statYou = document.querySelector("#stat-you");
@@ -160,19 +161,24 @@ frame.addEventListener("click", (event) => {
 });
 
 async function load() {
-  const response = await fetch(`/api/board?country=${encodeURIComponent(country)}`, {
-    headers: { "x-country": country },
-  });
-  if (!response.ok) return;
-  const data = await response.json();
-  country = data.country || country;
-  board = { weekly: data.weekly, alltime: data.alltime };
-  if (!chose) {
-    chose = true;
-    const home = tracked.get(country);
-    if (home) selected = home;
+  try {
+    const response = await fetch(`/api/board?country=${encodeURIComponent(country)}`, {
+      headers: { "x-country": country },
+    });
+    if (!response.ok) throw new Error("board failed");
+    boardStatus.textContent = "";
+    const data = await response.json();
+    country = data.country || country;
+    board = { weekly: data.weekly, alltime: data.alltime };
+    if (!chose) {
+      chose = true;
+      const home = tracked.get(country);
+      if (home) selected = home;
+    }
+    render();
+  } catch {
+    boardStatus.textContent = "The board did not load. Scores will show when it answers.";
   }
-  render();
 }
 
 const markup = await fetch("/earth.svg").then((response) => response.text());
