@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>punchface</title>
+  <link rel="stylesheet" href="/styles.css">
+</head>
+<body>
+  <main class="wrap">
+    <header>
+      <h1>punchface</h1>
+      <button class="sound" type="button" aria-pressed="false">Sound off</button>
+    </header>
+    <div class="stage">
+      <button class="face" type="button" aria-label="Punch the face">
+        <img src="/face.svg" alt="">
+      </button>
+    </div>
+    <p class="note"></p>
+    <section class="board" aria-label="Country race">
+      <div class="tabs">
+        <button type="button" class="on" data-mode="weekly">This week</button>
+        <button type="button" data-mode="alltime">All time</button>
+      </div>
+      <ol></ol>
+    </section>
+    <p class="disclaimer">The face is chosen by the site and replaced when punching slows. This is a game, not a claim of fact.</p>
+    <footer>
+      <span>Your punches stay on this phone until the counter is connected.</span>
+      <a href="https://ko-fi.com" rel="noopener">Ko-fi</a>
+    </footer>
+  </main>
+  <script src="/app.js"></script>
+</body>
+</html>

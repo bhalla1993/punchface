@@ -1,0 +1,14 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 200" role="img" aria-label="Cartoon dog">
+  <circle cx="100" cy="108" r="72" fill="#f4c078"/>
+  <ellipse cx="48" cy="58" rx="28" ry="36" fill="#e0a060"/>
+  <ellipse cx="152" cy="58" rx="28" ry="36" fill="#e0a060"/>
+  <ellipse cx="48" cy="62" rx="14" ry="20" fill="#f7d7a8"/>
+  <ellipse cx="152" cy="62" rx="14" ry="20" fill="#f7d7a8"/>
+  <ellipse cx="100" cy="128" rx="28" ry="20" fill="#f7d7a8"/>
+  <ellipse cx="100" cy="122" rx="12" ry="8" fill="#5c3b32"/>
+  <circle cx="74" cy="100" r="8" fill="#2b211c"/>
+  <circle cx="126" cy="100" r="8" fill="#2b211c"/>
+  <circle cx="76" cy="98" r="2.5" fill="#fff"/>
+  <circle cx="128" cy="98" r="2.5" fill="#fff"/>
+  <path d="M78 146c8 10 36 10 44 0" fill="none" stroke="#5c3b32" stroke-width="4" stroke-linecap="round"/>
+</svg>

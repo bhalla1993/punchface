@@ -1,0 +1,10 @@
+name = "punchface"
+main = "src/index.js"
+compatibility_date = "2026-02-01"
+
+[assets]
+directory = "./public"
+
+[vars]
+FACE_ID = "placeholder-dog"
+DAILY_CAP = "500"
