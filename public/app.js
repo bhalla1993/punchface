@@ -38,7 +38,8 @@ const menuBtn = document.querySelector(".menu-btn");
 const sheet = document.querySelector("#sheet");
 
 const CONTINENTS = [
-  { id: "americas", name: "Americas", codes: ["US", "CA", "MX", "BR", "AR"] },
+  { id: "north-america", name: "North America", codes: ["US", "CA", "MX"] },
+  { id: "south-america", name: "South America", codes: ["BR", "AR"] },
   { id: "europe", name: "Europe", codes: ["GB", "FR", "DE", "IT", "RU"] },
   { id: "asia", name: "Asia", codes: ["IN", "CN", "JP", "ID", "PK", "BD", "PH", "KR", "SA", "TR"] },
   { id: "africa", name: "Africa", codes: ["NG", "ZA"] },
