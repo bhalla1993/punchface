@@ -62,6 +62,10 @@ let word = 0;
 let lastHit = 0;
 let coolStamp = 0;
 let hitTimer = 0;
+let siteKey = "";
+let turnstileId = "";
+let turnstileToken = "";
+let tokenWaits = 0;
 
 paintCountry();
 
@@ -191,12 +195,23 @@ function bump(count) {
 async function flush() {
   const count = pending;
   if (!count) return;
+  if (siteKey && !turnstileToken) {
+    tokenWaits += 1;
+    if (tokenWaits < 8) {
+      flushTimer = setTimeout(flush, 400);
+      return;
+    }
+  }
+  tokenWaits = 0;
   pending = 0;
+  const token = turnstileToken;
+  turnstileToken = "";
+  if (siteKey && window.turnstile && turnstileId) window.turnstile.reset(turnstileId);
   try {
     const response = await fetch(`/api/punch?country=${encodeURIComponent(country)}`, {
       method: "POST",
       headers: { "content-type": "application/json", "x-country": country },
-      body: JSON.stringify({ count }),
+      body: JSON.stringify({ count, token }),
     });
     if (!response.ok) throw new Error("punch failed");
     apply(await response.json());
@@ -294,6 +309,32 @@ function renderDash() {
   statYouLabel.textContent = names[country] || "Your country";
 }
 
+async function prepareTurnstile() {
+  try {
+    const response = await fetch("/api/config");
+    if (!response.ok) return;
+    const config = await response.json();
+    siteKey = config.turnstileSiteKey || "";
+    if (!siteKey) return;
+    await new Promise((resolve, reject) => {
+      const script = document.createElement("script");
+      script.src = "https://challenges.cloudflare.com/turnstile/v0/api.js?render=explicit";
+      script.async = true;
+      script.onload = () => resolve();
+      script.onerror = () => reject(new Error("turnstile failed"));
+      document.head.append(script);
+    });
+    turnstileId = window.turnstile.render("#turnstile", {
+      sitekey: siteKey,
+      callback: (value) => { turnstileToken = value; },
+      "expired-callback": () => { turnstileToken = ""; },
+      "error-callback": () => { turnstileToken = ""; },
+    });
+  } catch {
+    siteKey = "";
+  }
+}
+
 function beep() {
   const ctx = new AudioContext();
   const osc = ctx.createOscillator();
@@ -326,6 +367,7 @@ function cool(now) {
 }
 
 requestAnimationFrame(cool);
+prepareTurnstile();
 load();
 setInterval(() => {
   if (!document.hidden) load();

@@ -1,2 +1,7 @@
 ALLOW_COUNTRY_OVERRIDE=1
 DAILY_CAP=20
+
+# Local-only Turnstile test keys. They always pass and must not be used on the public site.
+# Create a real widget in the Cloudflare dashboard, then set those keys before a public deploy.
+TURNSTILE_SITE_KEY=1x00000000000000000000BB
+TURNSTILE_SECRET=1x0000000000000000000000000000000AA

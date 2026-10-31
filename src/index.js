@@ -5,6 +5,9 @@ export { Board } from "./board.js";
 export default {
   async fetch(request, env) {
     const url = new URL(request.url);
+    if (url.pathname === "/api/config") {
+      return json({ turnstileSiteKey: env.TURNSTILE_SITE_KEY || "" });
+    }
     if (url.pathname === "/api/board") {
       return json(await callBoard(env, request, { count: 0 }));
     }
@@ -13,6 +16,9 @@ export default {
         return json({ error: "bad origin" }, 403);
       }
       const payload = await request.json().catch(() => ({}));
+      if (!(await turnstileOk(env, request, payload.token))) {
+        return json({ error: "check failed" }, 403);
+      }
       return json(await callBoard(env, request, payload));
     }
     if (url.pathname.startsWith("/api/")) {
@@ -49,6 +55,22 @@ async function callBoard(env, request, payload) {
     }),
   });
   return response.json();
+}
+
+async function turnstileOk(env, request, token) {
+  if (!env.TURNSTILE_SECRET) return true;
+  if (!token) return false;
+  const body = new FormData();
+  body.set("secret", env.TURNSTILE_SECRET);
+  body.set("response", token);
+  const ip = request.headers.get("CF-Connecting-IP");
+  if (ip) body.set("remoteip", ip);
+  const response = await fetch("https://challenges.cloudflare.com/turnstile/v0/siteverify", {
+    method: "POST",
+    body,
+  });
+  const data = await response.json().catch(() => ({}));
+  return data.success === true;
 }
 
 function sameOrigin(request, url) {

@@ -555,13 +555,16 @@ a.menu-btn { text-decoration: none; }
   color: var(--muted);
 }
 
-.disclaimer, footer {
+.turnstile { display: flex; justify-content: center; margin-top: 16px; }
+
+.disclaimer, .privacy, footer {
   color: #f3d7c4;
   font-size: 0.88rem;
   line-height: 1.45;
 }
 
 .disclaimer { margin: 18px 4px 0; }
+.privacy { margin: 8px 4px 0; }
 
 footer {
   display: flex;
