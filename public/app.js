@@ -32,7 +32,9 @@ const boardHelp = document.querySelector("#board-help");
 const menuBtn = document.querySelector(".menu-btn");
 const sheet = document.querySelector("#sheet");
 
+const WORDS = ["POW", "BAM", "WHAM", "POP"];
 const names = Object.fromEntries(COUNTRIES);
+const pow = face.querySelector(".pow");
 const local = location.hostname === "localhost" || location.hostname === "127.0.0.1";
 const params = new URLSearchParams(location.search);
 let country = params.get("country") || sessionStorage.getItem("country") || "CA";
@@ -42,6 +44,11 @@ let pending = 0;
 let board = null;
 let paused = false;
 let flushTimer = 0;
+let heat = 0;
+let word = 0;
+let lastHit = 0;
+let coolStamp = 0;
+let hitTimer = 0;
 
 paintCountry();
 
@@ -105,15 +112,49 @@ function paintCountry() {
 
 function hit() {
   tapHint.classList.add("gone");
+  face.classList.remove("idle");
+  lastHit = performance.now();
+  heat = Math.min(1, heat + 0.16);
+  document.documentElement.style.setProperty("--heat", heat.toFixed(3));
+  const label = WORDS[word % WORDS.length];
+  word += 1;
+  pow.textContent = label;
+  pow.dataset.word = label.toLowerCase();
+  pow.style.right = word % 2 ? "-8%" : "auto";
+  pow.style.left = word % 2 ? "auto" : "-8%";
+  pow.classList.remove("go");
   face.classList.remove("hit");
+  stage.classList.remove("hit");
   void face.offsetWidth;
+  pow.classList.add("go");
   face.classList.add("hit");
+  stage.classList.add("hit");
+  clearTimeout(hitTimer);
+  hitTimer = setTimeout(() => {
+    face.classList.remove("hit");
+    stage.classList.remove("hit");
+    if (heat === 0) face.classList.add("idle");
+  }, 220);
   const pop = document.createElement("span");
   pop.className = "pop";
   pop.textContent = "+1";
-  pop.style.left = `${42 + Math.random() * 16}%`;
+  pop.style.left = `${18 + Math.random() * 64}%`;
+  pop.style.top = `${Math.random() * 36}%`;
   stage.appendChild(pop);
   pop.addEventListener("animationend", () => pop.remove());
+  if (heat > 0.4) {
+    for (let i = 0; i < 3; i += 1) {
+      const spark = document.createElement("span");
+      spark.className = "spark";
+      const angle = Math.random() * Math.PI * 2;
+      spark.style.left = `${50 + Math.cos(angle) * 46}%`;
+      spark.style.top = `${46 + Math.sin(angle) * 46}%`;
+      spark.style.setProperty("--dx", `${Math.cos(angle) * 28}px`);
+      spark.style.setProperty("--dy", `${Math.sin(angle) * 28}px`);
+      stage.appendChild(spark);
+      spark.addEventListener("animationend", () => spark.remove());
+    }
+  }
   if (soundOn) beep();
   if (paused || note.dataset.full === "1") return;
   pending += 1;
@@ -237,6 +278,19 @@ document.addEventListener("visibilitychange", () => {
   }
 });
 
+function cool(now) {
+  if (!coolStamp) coolStamp = now;
+  const dt = now - coolStamp;
+  coolStamp = now;
+  if (heat > 0 && now - lastHit > 350) {
+    heat = Math.max(0, heat - dt / 1600);
+    document.documentElement.style.setProperty("--heat", heat.toFixed(3));
+    if (heat === 0) face.classList.add("idle");
+  }
+  requestAnimationFrame(cool);
+}
+
+requestAnimationFrame(cool);
 load();
 setInterval(() => {
   if (!document.hidden) load();

@@ -6,6 +6,9 @@
   --gold: #ffc83d;
   --muted: #6e5648;
   --line: #eadccb;
+  --heat: 0;
+  --ring: color-mix(in srgb, #ffd45a calc((1 - var(--heat)) * 100%), #ff3b30 calc(var(--heat) * 100%));
+  --ground: color-mix(in srgb, #1a0d0c calc((1 - var(--heat) * 0.72) * 100%), #9a1824 calc(var(--heat) * 72%));
   font-family: Outfit, "Avenir Next", "Segoe UI", sans-serif;
 }
 
@@ -16,10 +19,10 @@ body {
   min-height: 100vh;
   color: var(--paper);
   background:
-    radial-gradient(circle at 50% 250px, #ffd45a 0 210px, transparent 212px),
-    radial-gradient(circle at 8% 88%, #ff5a3c 0 120px, transparent 122px),
-    radial-gradient(circle at 96% 18%, #7a2a24 0 90px, transparent 92px),
-    #1a0d0c;
+    radial-gradient(circle at 50% 250px, var(--ring) 0 210px, transparent 212px),
+    radial-gradient(circle at 8% 88%, color-mix(in srgb, #ff5a3c, #ff3b30 calc(var(--heat) * 100%)) 0 120px, transparent 122px),
+    radial-gradient(circle at 96% 18%, color-mix(in srgb, #7a2a24, #ff3b30 calc(var(--heat) * 80%)) 0 90px, transparent 92px),
+    var(--ground);
 }
 
 body::before {
@@ -102,24 +105,60 @@ body::before {
   margin-top: 18px;
 }
 
+.ring-flash {
+  position: absolute;
+  z-index: 0;
+  width: min(430px, 118vw);
+  height: min(430px, 118vw);
+  border-radius: 50%;
+  top: 46%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  background: radial-gradient(circle, transparent 40%, rgba(255, 59, 48, 0.72) 56%, transparent 70%);
+  opacity: 0;
+  pointer-events: none;
+}
+
+.stage.hit .ring-flash { animation: ringflash 280ms ease; }
+
 .face {
   width: min(280px, 78vw);
   height: min(280px, 78vw);
   border: 4px solid var(--ink);
   padding: 0;
   border-radius: 50%;
-  background: radial-gradient(circle at 50% 38%, #ffe7bf, #e8943a 74%);
+  background: radial-gradient(circle at 50% 38%, #ffe7bf, color-mix(in srgb, #e8943a, #ff3b30 calc(var(--heat) * 85%)) 74%);
   box-shadow: 0 16px 0 rgba(36, 22, 15, 0.18), 0 18px 40px rgba(0, 0, 0, 0.28);
   cursor: pointer;
   touch-action: manipulation;
   position: relative;
+  z-index: 1;
 }
 
-.face img {
+.face svg {
   width: 100%;
   height: 100%;
+  display: block;
   pointer-events: none;
 }
+
+.face.idle svg {
+  transform-origin: 50% 55%;
+  animation: breathe 2.8s ease-in-out infinite;
+}
+
+.eyes {
+  transform-box: fill-box;
+  transform-origin: center;
+}
+
+.blush { fill: #ff7d72; opacity: 0.7; }
+.blush.hot { fill: #ff3b30; opacity: calc(var(--heat) * 0.9); }
+.oof { opacity: 0; }
+
+.face.hit .eyes { transform: scaleY(0.22); }
+.face.hit .smile { opacity: 0; }
+.face.hit .oof { opacity: 1; }
 
 .face:focus-visible,
 .menu-btn:focus-visible,
@@ -146,15 +185,29 @@ body::before {
   pointer-events: none;
 }
 
+.pow[data-word="bam"] { color: #ff8a1e; }
+.pow[data-word="wham"] { color: var(--gold); }
+.pow[data-word="pop"] { color: #ff5d6c; }
+
 .face.hit {
   animation: shake 180ms linear;
 }
 
-.face.hit img {
+.face.hit svg {
   animation: squash 180ms ease;
 }
 
-.face.hit .pow {
+.face.hit::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.5);
+  animation: flashface 160ms ease;
+  pointer-events: none;
+}
+
+.pow.go {
   animation: pow 460ms ease;
 }
 
@@ -171,7 +224,24 @@ body::before {
   pointer-events: none;
 }
 
+.spark {
+  position: absolute;
+  top: 46%;
+  left: 50%;
+  z-index: 3;
+  width: 10px;
+  height: 10px;
+  margin: -5px;
+  background: var(--gold);
+  border: 2px solid var(--ink);
+  border-radius: 2px;
+  animation: spark 420ms ease forwards;
+  pointer-events: none;
+}
+
 .tap-hint {
+  position: relative;
+  z-index: 2;
   margin: -18px 0 0;
   background: var(--red);
   color: white;
@@ -489,26 +559,49 @@ footer a { color: var(--gold); font-weight: 760; }
 }
 
 @media (prefers-reduced-motion: reduce) {
+  .face.idle svg,
   .face.hit,
-  .face.hit img,
-  .face.hit .pow,
+  .face.hit svg,
+  .face.hit .eyes,
+  .pow.go,
+  .face.hit::after,
+  .stage.hit .ring-flash,
   .pop,
+  .spark,
   .tap-hint { animation: none; }
-  .face.hit .pow { opacity: 1; transform: rotate(14deg); }
+  .pow.go { opacity: 1; transform: rotate(14deg); }
+}
+
+@keyframes breathe {
+  50% { transform: scale(1.03); }
 }
 
 @keyframes squash {
-  40% { transform: scale(1.08, 0.9) rotate(-2deg); }
+  40% { transform: scale(calc(1.06 + var(--heat) * 0.08), calc(0.9 - var(--heat) * 0.1)) rotate(-3deg); }
 }
 
 @keyframes shake {
-  25% { transform: translateX(-4px) rotate(-1deg); }
-  75% { transform: translateX(4px) rotate(1deg); }
+  25% { transform: translateX(calc(-3px - var(--heat) * 6px)) rotate(-1deg); }
+  75% { transform: translateX(calc(3px + var(--heat) * 6px)) rotate(1deg); }
 }
 
 @keyframes pow {
   30% { opacity: 1; transform: rotate(14deg) scale(1); }
-  100% { opacity: 0; transform: rotate(18deg) scale(1.15) translateY(-12px); }
+  100% { opacity: 0; transform: rotate(18deg) scale(1.2) translateY(-16px); }
+}
+
+@keyframes flashface {
+  20% { opacity: 0.55; }
+  100% { opacity: 0; }
+}
+
+@keyframes ringflash {
+  30% { opacity: 1; }
+  100% { opacity: 0; }
+}
+
+@keyframes spark {
+  to { transform: translate(var(--dx), var(--dy)) scale(0.2); opacity: 0; }
 }
 
 @keyframes float {

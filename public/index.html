@@ -20,9 +20,48 @@
     <p class="punch-for" id="punch-for">Your punches count for <span id="you-flag"></span> <strong id="you-name">your country</strong></p>
 
     <div class="stage">
-      <button class="face" type="button" aria-label="Punch the face">
+      <span class="ring-flash" aria-hidden="true"></span>
+      <button class="face idle" type="button" aria-label="Punch the face">
         <span class="pow" aria-hidden="true">POW</span>
-        <img src="/face.svg" alt="">
+        <svg class="mug" viewBox="0 0 200 200" aria-hidden="true">
+          <defs>
+            <radialGradient id="fur" cx="38%" cy="32%" r="75%">
+              <stop offset="0%" stop-color="#ffe3b5"/>
+              <stop offset="58%" stop-color="#f0aa4e"/>
+              <stop offset="100%" stop-color="#d4842e"/>
+            </radialGradient>
+          </defs>
+          <ellipse cx="38" cy="86" rx="30" ry="46" fill="#c56d28" transform="rotate(-16 38 86)"/>
+          <ellipse cx="44" cy="90" rx="16" ry="28" fill="#f6d2ae" transform="rotate(-16 44 90)"/>
+          <ellipse cx="162" cy="86" rx="30" ry="46" fill="#c56d28" transform="rotate(16 162 86)"/>
+          <ellipse cx="156" cy="90" rx="16" ry="28" fill="#f6d2ae" transform="rotate(16 156 90)"/>
+          <circle cx="100" cy="108" r="74" fill="url(#fur)" stroke="#24160f" stroke-width="4"/>
+          <ellipse cx="72" cy="78" rx="20" ry="12" fill="#e3923a" opacity="0.55"/>
+          <g class="cheeks">
+            <ellipse class="blush" cx="52" cy="124" rx="11" ry="7"/>
+            <ellipse class="blush" cx="148" cy="124" rx="11" ry="7"/>
+            <ellipse class="blush hot" cx="54" cy="126" rx="16" ry="10"/>
+            <ellipse class="blush hot" cx="146" cy="126" rx="16" ry="10"/>
+          </g>
+          <ellipse cx="100" cy="136" rx="38" ry="28" fill="#fff7ec" stroke="#24160f" stroke-width="3"/>
+          <ellipse cx="100" cy="120" rx="15" ry="11" fill="#24160f"/>
+          <ellipse cx="95" cy="116" rx="4" ry="3" fill="#fff" opacity="0.5"/>
+          <g class="eyes">
+            <ellipse cx="68" cy="98" rx="15" ry="17" fill="#fff" stroke="#24160f" stroke-width="2.5"/>
+            <ellipse cx="132" cy="98" rx="15" ry="17" fill="#fff" stroke="#24160f" stroke-width="2.5"/>
+            <circle cx="72" cy="101" r="7" fill="#24160f"/>
+            <circle cx="136" cy="101" r="7" fill="#24160f"/>
+            <circle cx="74.5" cy="97.5" r="2.5" fill="#fff"/>
+            <circle cx="138.5" cy="97.5" r="2.5" fill="#fff"/>
+          </g>
+          <path d="M50 80c12-12 26-8 32 0" fill="none" stroke="#24160f" stroke-width="4.5" stroke-linecap="round"/>
+          <path d="M118 74c10-10 26-6 34 6" fill="none" stroke="#24160f" stroke-width="4.5" stroke-linecap="round"/>
+          <g class="smile">
+            <path d="M78 146c8 14 36 14 46 0" fill="none" stroke="#24160f" stroke-width="4" stroke-linecap="round"/>
+            <path d="M98 148c1 12 14 14 16 2" fill="#ff5d6c" stroke="#24160f" stroke-width="2.5" stroke-linejoin="round"/>
+          </g>
+          <path class="oof" d="M82 150h36" fill="none" stroke="#24160f" stroke-width="4" stroke-linecap="round"/>
+        </svg>
       </button>
       <p class="tap-hint" id="tap-hint">Tap the face</p>
     </div>
