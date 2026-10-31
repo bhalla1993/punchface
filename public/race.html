@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#1a0d0c">
+  <title>The map · punchface</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Lilita+One&family=Outfit:wght@400;500;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/styles.css">
+</head>
+<body>
+  <main class="page map-page">
+    <header class="top">
+      <a class="logo" href="/"><span>punch</span>face</a>
+      <a class="menu-btn" href="/">Punch</a>
+    </header>
+    <section class="card dash" aria-labelledby="dash-title">
+      <div class="board-head">
+        <h1 id="dash-title">The map</h1>
+        <div class="tabs">
+          <button type="button" class="on" data-mode="weekly">This week</button>
+          <button type="button" data-mode="alltime">All time</button>
+        </div>
+      </div>
+      <div class="stats">
+        <p><strong id="stat-total">0</strong><span>punches</span></p>
+        <p><strong id="stat-lead">None yet</strong><span>in the lead</span></p>
+        <p><strong id="stat-you">0</strong><span id="stat-you-label">your country</span></p>
+      </div>
+      <div class="map-frame" id="map-frame" aria-busy="true"></div>
+      <div class="boxes continents" id="continent-boxes"></div>
+      <h2 class="box-title" id="box-title">Countries</h2>
+      <div class="boxes countries" id="country-boxes"></div>
+    </section>
+    <p class="disclaimer">Countries outside the 23 score together as Rest of world, so they are not painted on the map. Darker countries have more punches.</p>
+  </main>
+  <script type="module" src="/race.js"></script>
+</body>
+</html>

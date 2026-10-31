@@ -309,12 +309,14 @@ body::before {
   margin-top: 16px;
 }
 
-h2, h3 {
+h1, h2, h3 {
   font-family: "Lilita One", Impact, sans-serif;
   font-weight: 400;
   letter-spacing: 0.02em;
   margin: 0;
 }
+
+.dash h1 { font-size: 1.7rem; }
 
 .howto h2,
 .board h2,
@@ -380,84 +382,90 @@ h2, h3 {
   line-height: 1.2;
 }
 
-.world {
-  width: 100%;
-  height: auto;
+a.logo { color: var(--paper); }
+
+a.logo,
+a.map-link,
+a.menu-btn { text-decoration: none; }
+
+.map-link {
   display: block;
+  margin-top: 12px;
+  text-align: center;
+  border: 3px solid var(--ink);
+  background: var(--gold);
+  color: var(--ink);
+  border-radius: 14px;
+  padding: 12px;
+  font-weight: 700;
+  box-shadow: 3px 3px 0 var(--ink);
+}
+
+.map-page { width: min(960px, 100%); }
+
+.map-frame {
+  margin-top: 14px;
+  background: #c5e4f5;
+  border: 3px solid var(--ink);
+  border-radius: 18px;
+  overflow: hidden;
+}
+
+.map-frame svg { width: 100%; height: auto; display: block; }
+
+.ocean { fill: #b7daf0; }
+
+#lands path {
+  fill: #f6ead8;
+  stroke: #d7c4ae;
+  stroke-width: 0.6;
+}
+
+#lands path.scored { stroke: var(--ink); stroke-width: 0.9; cursor: pointer; }
+#lands path.dim { opacity: 0.38; }
+#lands path.picked { stroke: var(--ink); stroke-width: 1.6; }
+
+.boxes {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 8px;
   margin-top: 12px;
 }
 
-.world .land { cursor: pointer; }
-
-.world .land path {
-  fill: #f6ead8;
-  stroke: var(--ink);
-  stroke-width: 2;
-}
-
-.world .land.on path { stroke-width: 4; }
-
-.world text {
-  font-family: Outfit, "Avenir Next", sans-serif;
-  font-size: 12px;
-  font-weight: 700;
-  fill: var(--ink);
-  stroke: var(--paper);
-  stroke-width: 4px;
-  paint-order: stroke fill;
-  text-anchor: middle;
-  pointer-events: none;
-}
-
-.map-hint {
-  margin: 8px 0 0;
-  color: var(--muted);
-  font-size: 0.85rem;
-}
-
-.rest {
-  width: 100%;
-  margin-top: 8px;
+.box {
   border: 2px solid var(--ink);
   background: white;
   color: var(--ink);
-  border-radius: 12px;
+  border-radius: 14px;
   padding: 10px 12px;
-  font: inherit;
-  font-weight: 700;
   text-align: left;
+  font: inherit;
   cursor: pointer;
 }
 
-.rest.on {
-  background: #ffd0c6;
+.box.on { background: #ffd0c6; box-shadow: 3px 3px 0 var(--ink); }
+
+.box strong {
+  display: block;
+  font-family: "Lilita One", Impact, sans-serif;
+  font-weight: 400;
+  font-size: 1.45rem;
+  line-height: 1;
 }
 
-.continent-detail {
-  margin-top: 10px;
+.box span { color: var(--muted); font-size: 0.82rem; }
+
+.box.you { outline: 2px solid var(--red); }
+
+.box-title {
+  margin: 16px 0 0;
+  font-size: 1.35rem;
 }
 
-.continent-detail h3 {
-  font-size: 1.15rem;
+@media (min-width: 720px) {
+  .boxes.continents { grid-template-columns: repeat(3, 1fr); }
+  .boxes.countries { grid-template-columns: repeat(4, 1fr); }
 }
-
-.continent-detail ol {
-  list-style: none;
-  margin: 8px 0 0;
-  padding: 0;
-}
-
-.continent-detail li {
-  display: grid;
-  grid-template-columns: 1.5rem 1fr auto;
-  gap: 8px;
-  align-items: center;
-  padding: 8px 2px;
-  border-top: 1px solid var(--line);
-  font-weight: 700;
-}
-
-.continent-detail li.you span:nth-child(2) { color: var(--red); }
 
 .board-head {
   display: flex;

@@ -29,9 +29,7 @@ const youWeek = document.querySelector("#you-week");
 const youUnit = document.querySelector("#you-unit");
 const tapHint = document.querySelector("#tap-hint");
 const boardHelp = document.querySelector("#board-help");
-const world = document.querySelector("#world");
-const restChip = document.querySelector("#rest-chip");
-const continentDetail = document.querySelector("#continent-detail");
+const mapLink = document.querySelector(".map-link");
 const statTotal = document.querySelector("#stat-total");
 const statLead = document.querySelector("#stat-lead");
 const statYou = document.querySelector("#stat-you");
@@ -55,7 +53,6 @@ const params = new URLSearchParams(location.search);
 let country = params.get("country") || sessionStorage.getItem("country") || "CA";
 let soundOn = false;
 let mode = "weekly";
-let selectedContinent = "";
 let pending = 0;
 let board = null;
 let paused = false;
@@ -112,27 +109,6 @@ face.addEventListener("pointerdown", (event) => {
   hit();
 });
 
-world.addEventListener("click", (event) => {
-  const land = event.target.closest("[data-continent]");
-  if (!land) return;
-  selectedContinent = land.dataset.continent;
-  render();
-});
-
-world.addEventListener("keydown", (event) => {
-  if (event.key !== "Enter" && event.key !== " ") return;
-  const land = event.target.closest("[data-continent]");
-  if (!land) return;
-  event.preventDefault();
-  selectedContinent = land.dataset.continent;
-  render();
-});
-
-restChip.addEventListener("click", () => {
-  selectedContinent = "rest";
-  render();
-});
-
 tabs.forEach((tab) => {
   tab.addEventListener("click", () => {
     mode = tab.dataset.mode;
@@ -145,6 +121,9 @@ function paintCountry() {
   youFlag.textContent = FLAGS[country] || "🌍";
   youName.textContent = names[country] || "Rest of world";
   countryBtn.textContent = `${FLAGS[country] || "🌍"}  ${names[country] || "Rest of world"}`;
+  const next = new URL("/race.html", location.origin);
+  if (local) next.searchParams.set("country", country);
+  mapLink.href = `${next.pathname}${next.search}`;
 }
 
 function hit() {
@@ -301,65 +280,18 @@ function scoreOf(code) {
   return board[mode].find((row) => row.code === code)?.score || 0;
 }
 
-function continentScore(item) {
-  return item.codes.reduce((sum, code) => sum + scoreOf(code), 0);
-}
-
-function mixColor(share) {
-  const from = [255, 200, 61];
-  const to = [226, 59, 47];
-  const channel = (index) => Math.round(from[index] + (to[index] - from[index]) * share);
-  return `rgb(${channel(0)} ${channel(1)} ${channel(2)})`;
-}
-
 function renderDash() {
   if (!board) return;
-  const totals = CONTINENTS.map((item) => ({ ...item, score: continentScore(item) }));
+  const totals = CONTINENTS.map((item) => ({
+    ...item,
+    score: item.codes.reduce((sum, code) => sum + scoreOf(code), 0),
+  }));
   const total = board[mode].reduce((sum, row) => sum + row.score, 0);
   const lead = totals.reduce((best, item) => (item.score > best.score ? item : best), totals[0]);
-  if (!selectedContinent) {
-    selectedContinent = CONTINENTS.find((item) => item.codes.includes(country))?.id || (lead.score > 0 ? lead.id : "americas");
-  }
   statTotal.textContent = String(total);
   statLead.textContent = lead.score > 0 ? lead.name : "None yet";
   statYou.textContent = String(scoreOf(country));
   statYouLabel.textContent = names[country] || "Your country";
-  const max = Math.max(...totals.map((item) => item.score), 1);
-  totals.forEach((item) => {
-    const land = world.querySelector(`[data-continent="${item.id}"]`);
-    const share = item.score === 0 ? 0 : 0.35 + 0.65 * (item.score / max);
-    land.querySelector("path").style.fill = share === 0 ? "#f6ead8" : mixColor(share);
-    land.classList.toggle("on", item.id === selectedContinent);
-    land.dataset.hot = share > 0.72 ? "1" : "0";
-    land.setAttribute("aria-pressed", String(item.id === selectedContinent));
-    land.setAttribute("aria-label", `${item.name}, ${item.score} punches`);
-  });
-  const rest = scoreOf("XX");
-  restChip.textContent = `Rest of world · ${rest}`;
-  restChip.classList.toggle("on", selectedContinent === "rest");
-  const picked = totals.find((item) => item.id === selectedContinent);
-  const rows = picked
-    ? picked.codes
-      .map((code) => board[mode].find((row) => row.code === code))
-      .filter(Boolean)
-      .sort((a, b) => b.score - a.score || a.name.localeCompare(b.name))
-    : [{ code: "XX", name: "Rest of world", score: rest }];
-  const title = document.createElement("h3");
-  title.textContent = picked ? picked.name : "Rest of world";
-  const list = document.createElement("ol");
-  rows.forEach((row) => {
-    const item = document.createElement("li");
-    if (row.code === country) item.className = "you";
-    const flag = document.createElement("span");
-    flag.textContent = FLAGS[row.code] || "🌍";
-    const name = document.createElement("span");
-    name.textContent = row.name;
-    const score = document.createElement("span");
-    score.textContent = String(row.score);
-    item.append(flag, name, score);
-    list.append(item);
-  });
-  continentDetail.replaceChildren(title, list);
 }
 
 function beep() {
