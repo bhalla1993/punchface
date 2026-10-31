@@ -128,7 +128,9 @@ function paintCountry() {
   countryBtn.textContent = `${FLAGS[country] || "🌍"}  ${names[country] || "Rest of world"}`;
   const next = new URL("/race.html", location.origin);
   if (local) next.searchParams.set("country", country);
-  mapLink.href = `${next.pathname}${next.search}`;
+  const href = `${next.pathname}${next.search}`;
+  mapLink.href = href;
+  document.querySelectorAll(".menu-map").forEach((link) => { link.href = href; });
 }
 
 function hit() {

@@ -392,6 +392,18 @@ a.logo,
 a.map-link,
 a.menu-btn { text-decoration: none; }
 
+.score-note {
+  margin: 10px 0 0;
+  color: var(--muted);
+  font-size: 0.9rem;
+  line-height: 1.4;
+}
+
+.menu-map {
+  color: var(--ink);
+  font-weight: 700;
+}
+
 .map-link {
   display: block;
   margin-top: 12px;

@@ -28,6 +28,7 @@ const frame = document.querySelector("#map-frame");
 const continentBoxes = document.querySelector("#continent-boxes");
 const countryBoxes = document.querySelector("#country-boxes");
 const boxTitle = document.querySelector("#box-title");
+const listNote = document.querySelector("#list-note");
 const statTotal = document.querySelector("#stat-total");
 const statLead = document.querySelector("#stat-lead");
 const statYou = document.querySelector("#stat-you");
@@ -96,7 +97,7 @@ function render() {
   }
 
   const groups = [
-    { id: "all", name: "All countries", score: total - scoreOf("XX") },
+    { id: "all", name: "Countries we score", score: total - scoreOf("XX") },
     ...totals,
     { id: "rest", name: "Rest of world", score: scoreOf("XX") },
   ];
@@ -123,7 +124,10 @@ function render() {
       .map((code) => board[mode].find((row) => row.code === code))
       .filter(Boolean)
       .sort((a, b) => b.score - a.score || a.name.localeCompare(b.name));
-  boxTitle.textContent = picked ? picked.name : selected === "rest" ? "Rest of world" : "Countries";
+  boxTitle.textContent = picked ? picked.name : selected === "rest" ? "Rest of world" : "Countries we score";
+  listNote.textContent = selected === "rest"
+    ? "If your country is not in that list, your punches count here."
+    : "Countries we score is the full list. If your country is not in it, your punches count as Rest of world.";
   countryBoxes.replaceChildren(...rows.map((row) => {
     const button = document.createElement("button");
     button.type = "button";
