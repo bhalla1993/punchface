@@ -348,6 +348,117 @@ h2, h3 {
 
 .steps p { margin: 0; line-height: 1.35; }
 
+.stats {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 8px;
+  margin-top: 12px;
+}
+
+.stats p {
+  margin: 0;
+  background: white;
+  border: 2px solid var(--ink);
+  border-radius: 14px;
+  padding: 8px 6px;
+  text-align: center;
+}
+
+.stats strong {
+  display: block;
+  font-family: "Lilita One", Impact, sans-serif;
+  font-weight: 400;
+  font-size: 1.25rem;
+  line-height: 1.1;
+}
+
+.stats span {
+  display: block;
+  margin-top: 2px;
+  color: var(--muted);
+  font-size: 0.72rem;
+  line-height: 1.2;
+}
+
+.world {
+  width: 100%;
+  height: auto;
+  display: block;
+  margin-top: 12px;
+}
+
+.world .land { cursor: pointer; }
+
+.world .land path {
+  fill: #f6ead8;
+  stroke: var(--ink);
+  stroke-width: 2;
+}
+
+.world .land.on path { stroke-width: 4; }
+
+.world text {
+  font-family: Outfit, "Avenir Next", sans-serif;
+  font-size: 12px;
+  font-weight: 700;
+  fill: var(--ink);
+  stroke: var(--paper);
+  stroke-width: 4px;
+  paint-order: stroke fill;
+  text-anchor: middle;
+  pointer-events: none;
+}
+
+.map-hint {
+  margin: 8px 0 0;
+  color: var(--muted);
+  font-size: 0.85rem;
+}
+
+.rest {
+  width: 100%;
+  margin-top: 8px;
+  border: 2px solid var(--ink);
+  background: white;
+  color: var(--ink);
+  border-radius: 12px;
+  padding: 10px 12px;
+  font: inherit;
+  font-weight: 700;
+  text-align: left;
+  cursor: pointer;
+}
+
+.rest.on {
+  background: #ffd0c6;
+}
+
+.continent-detail {
+  margin-top: 10px;
+}
+
+.continent-detail h3 {
+  font-size: 1.15rem;
+}
+
+.continent-detail ol {
+  list-style: none;
+  margin: 8px 0 0;
+  padding: 0;
+}
+
+.continent-detail li {
+  display: grid;
+  grid-template-columns: 1.5rem 1fr auto;
+  gap: 8px;
+  align-items: center;
+  padding: 8px 2px;
+  border-top: 1px solid var(--line);
+  font-weight: 700;
+}
+
+.continent-detail li.you span:nth-child(2) { color: var(--red); }
+
 .board-head {
   display: flex;
   justify-content: space-between;
