@@ -7,6 +7,12 @@ const COUNTRIES = [
   ["TR", "Türkiye"], ["GB", "United Kingdom"], ["US", "United States"], ["XX", "Rest of world"],
 ];
 
+const FLAGS = {
+  AR: "🇦🇷", AU: "🇦🇺", BD: "🇧🇩", BR: "🇧🇷", CA: "🇨🇦", CN: "🇨🇳", FR: "🇫🇷", DE: "🇩🇪",
+  IN: "🇮🇳", ID: "🇮🇩", IT: "🇮🇹", JP: "🇯🇵", MX: "🇲🇽", NG: "🇳🇬", PK: "🇵🇰", PH: "🇵🇭",
+  RU: "🇷🇺", SA: "🇸🇦", ZA: "🇿🇦", KR: "🇰🇷", TR: "🇹🇷", GB: "🇬🇧", US: "🇺🇸", XX: "🌍",
+};
+
 const face = document.querySelector(".face");
 const note = document.querySelector(".note");
 const list = document.querySelector(".board ol");
@@ -15,8 +21,18 @@ const soundBtn = document.querySelector(".sound");
 const status = document.querySelector(".status");
 const tabs = [...document.querySelectorAll(".tabs button")];
 const dev = document.querySelector(".dev");
-const countrySelect = document.querySelector("#country");
+const countryBtn = document.querySelector("#country-btn");
+const countryMenu = document.querySelector("#country-menu");
+const youFlag = document.querySelector("#you-flag");
+const youName = document.querySelector("#you-name");
+const youWeek = document.querySelector("#you-week");
+const youUnit = document.querySelector("#you-unit");
+const tapHint = document.querySelector("#tap-hint");
+const boardHelp = document.querySelector("#board-help");
+const menuBtn = document.querySelector(".menu-btn");
+const sheet = document.querySelector("#sheet");
 
+const names = Object.fromEntries(COUNTRIES);
 const local = location.hostname === "localhost" || location.hostname === "127.0.0.1";
 const params = new URLSearchParams(location.search);
 let country = params.get("country") || sessionStorage.getItem("country") || "CA";
@@ -27,18 +43,40 @@ let board = null;
 let paused = false;
 let flushTimer = 0;
 
+paintCountry();
+
 if (local) {
   dev.hidden = false;
-  countrySelect.innerHTML = COUNTRIES.map(([code, name]) => `<option value="${code}">${name}</option>`).join("");
-  countrySelect.value = country;
-  countrySelect.addEventListener("change", () => {
-    country = countrySelect.value;
-    sessionStorage.setItem("country", country);
-    const next = new URL(location.href);
-    next.searchParams.set("country", country);
-    location.href = next;
+  countryMenu.replaceChildren(...COUNTRIES.map(([code, name]) => {
+    const button = document.createElement("button");
+    button.type = "button";
+    if (code === country) button.className = "on";
+    button.innerHTML = `<span>${FLAGS[code] || "🌍"}</span><span></span>`;
+    button.lastElementChild.textContent = name;
+    button.addEventListener("click", () => {
+      sessionStorage.setItem("country", code);
+      const next = new URL(location.href);
+      next.searchParams.set("country", code);
+      location.href = next;
+    });
+    return button;
+  }));
+  countryBtn.addEventListener("click", () => {
+    const open = countryMenu.hidden;
+    countryMenu.hidden = !open;
+    countryBtn.setAttribute("aria-expanded", String(open));
   });
 }
+
+menuBtn.addEventListener("click", () => {
+  sheet.showModal();
+  menuBtn.setAttribute("aria-expanded", "true");
+});
+sheet.querySelector("[data-close]").addEventListener("click", () => sheet.close());
+sheet.addEventListener("click", (event) => {
+  if (event.target === sheet) sheet.close();
+});
+sheet.addEventListener("close", () => menuBtn.setAttribute("aria-expanded", "false"));
 
 soundBtn.addEventListener("click", () => {
   soundOn = !soundOn;
@@ -59,13 +97,21 @@ tabs.forEach((tab) => {
   });
 });
 
+function paintCountry() {
+  youFlag.textContent = FLAGS[country] || "🌍";
+  youName.textContent = names[country] || "Rest of world";
+  countryBtn.textContent = `${FLAGS[country] || "🌍"}  ${names[country] || "Rest of world"}`;
+}
+
 function hit() {
+  tapHint.classList.add("gone");
   face.classList.remove("hit");
   void face.offsetWidth;
   face.classList.add("hit");
   const pop = document.createElement("span");
   pop.className = "pop";
   pop.textContent = "+1";
+  pop.style.left = `${42 + Math.random() * 16}%`;
   stage.appendChild(pop);
   pop.addEventListener("animationend", () => pop.remove());
   if (soundOn) beep();
@@ -78,8 +124,6 @@ function hit() {
 
 function bump(count) {
   if (!board) return;
-  const row = board[mode].find((item) => item.code === country) || board.weekly.find((item) => item.code === country);
-  if (!row) return;
   const weekly = board.weekly.find((item) => item.code === country);
   const alltime = board.alltime.find((item) => item.code === country);
   if (weekly) weekly.score += count;
@@ -98,8 +142,7 @@ async function flush() {
       body: JSON.stringify({ count }),
     });
     if (!response.ok) throw new Error("punch failed");
-    const data = await response.json();
-    apply(data);
+    apply(await response.json());
   } catch {
     bump(-count);
     paused = true;
@@ -129,28 +172,48 @@ function apply(data) {
   note.textContent = data.limited
     ? "You can keep punching for fun. These no longer add to the count."
     : "";
+  paintCountry();
   render();
 }
 
 function render() {
+  boardHelp.textContent = mode === "weekly"
+    ? "This week resets Monday at midnight UTC. Your country stays on the list."
+    : "All time keeps every punch, including after the face changes.";
+  const mine = board && board.weekly.find((row) => row.code === country);
+  const weekScore = mine ? mine.score : 0;
+  youWeek.textContent = String(weekScore);
+  youUnit.textContent = weekScore === 1 ? "punch" : "punches";
   if (!board) {
     list.replaceChildren();
     return;
   }
-  const rows = [...board[mode]].sort((a, b) => b.score - a.score);
+  const rows = [...board[mode]].sort((a, b) => b.score - a.score || a.name.localeCompare(b.name));
   const top = rows.filter((row) => row.score > 0).slice(0, 10);
   if (!top.some((row) => row.code === country)) {
-    const mine = rows.find((row) => row.code === country);
-    if (mine) top.push(mine);
+    const own = rows.find((row) => row.code === country);
+    if (own) top.push(own);
   }
-  if (!top.length) {
-    const mine = rows.find((row) => row.code === country);
-    if (mine) top.push(mine);
-  }
+  const max = Math.max(...top.map((row) => row.score), 1);
   list.replaceChildren(...top.map((row, index) => {
     const item = document.createElement("li");
     if (row.code === country) item.className = "you";
-    item.innerHTML = `<span>${index + 1}</span><span>${row.name}</span><span class="score">${row.score}</span>`;
+    item.style.setProperty("--w", `${row.score ? (row.score / max) * 100 : 0}%`);
+    const bar = document.createElement("span");
+    bar.className = "bar";
+    const rank = document.createElement("span");
+    rank.className = "rank";
+    rank.textContent = String(index + 1);
+    const flag = document.createElement("span");
+    flag.className = "flag";
+    flag.textContent = FLAGS[row.code] || "🌍";
+    const name = document.createElement("span");
+    name.className = "name";
+    name.textContent = row.name;
+    const score = document.createElement("span");
+    score.className = "score";
+    score.textContent = String(row.score);
+    item.append(bar, rank, flag, name, score);
     return item;
   }));
 }

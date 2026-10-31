@@ -3,38 +3,96 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#1a0d0c">
   <title>punchface</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Lilita+One&family=Outfit:wght@400;500;700&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="/styles.css">
 </head>
 <body>
-  <main class="wrap">
-    <header>
-      <h1>punchface</h1>
-      <button class="sound" type="button" aria-pressed="false">Sound off</button>
+  <main class="page">
+    <header class="top">
+      <p class="logo"><span>punch</span>face</p>
+      <button class="menu-btn" type="button" aria-expanded="false" aria-controls="sheet">Menu</button>
     </header>
+
+    <p class="punch-for" id="punch-for">Your punches count for <span id="you-flag"></span> <strong id="you-name">your country</strong></p>
+
     <div class="stage">
       <button class="face" type="button" aria-label="Punch the face">
+        <span class="pow" aria-hidden="true">POW</span>
         <img src="/face.svg" alt="">
       </button>
+      <p class="tap-hint" id="tap-hint">Tap the face</p>
     </div>
+    <p class="help">One tap is one punch. It moves your country up the board.</p>
+    <p class="you-total"><strong id="you-week">0</strong> <span id="you-unit">punches</span> for you this week</p>
+
     <p class="note"></p>
     <p class="status"></p>
-    <section class="board" aria-label="Country race">
-      <div class="tabs">
-        <button type="button" class="on" data-mode="weekly">This week</button>
-        <button type="button" data-mode="alltime">All time</button>
+
+    <section class="card howto" aria-labelledby="howto-title">
+      <h2 id="howto-title">How it works</h2>
+      <ol class="steps">
+        <li>
+          <span>1</span>
+          <p><strong>Punch the face.</strong> Click or tap. The face reacts right away. Sound stays off until you turn it on in the menu.</p>
+        </li>
+        <li>
+          <span>2</span>
+          <p><strong>Your country scores.</strong> Punches stick to the country you are visiting from. You cannot hand them to another country.</p>
+        </li>
+        <li>
+          <span>3</span>
+          <p><strong>Watch the board.</strong> This week is the race and resets Monday. All time keeps the total.</p>
+        </li>
+      </ol>
+    </section>
+
+    <section class="card board" aria-label="Country race">
+      <div class="board-head">
+        <h2>The board</h2>
+        <div class="tabs">
+          <button type="button" class="on" data-mode="weekly">This week</button>
+          <button type="button" data-mode="alltime">All time</button>
+        </div>
       </div>
+      <p class="board-help" id="board-help"></p>
       <ol></ol>
     </section>
+
     <p class="disclaimer">The face is chosen by the site and replaced when punching slows. This is a game, not a claim of fact.</p>
     <footer>
-      <span></span>
-      <a href="https://ko-fi.com" rel="noopener">Ko-fi</a>
+      <span>punchface.click</span>
+      <a href="https://ko-fi.com" rel="noopener">Tip the site on Ko-fi</a>
     </footer>
-    <div class="dev" hidden>
-      <label>Test country <select id="country"></select></label>
-    </div>
+
+    <section class="card dev" hidden>
+      <p class="dev-kicker">On this computer only</p>
+      <h2>Try another country</h2>
+      <p class="dev-copy">The live site uses the country you are visiting from. This switch is here so you can test the board.</p>
+      <button class="country-btn" id="country-btn" type="button" aria-expanded="false" aria-controls="country-menu">Choose a country</button>
+      <div class="country-menu" id="country-menu" hidden></div>
+    </section>
   </main>
+
+  <dialog id="sheet" class="sheet">
+    <div class="sheet-card">
+      <header class="sheet-top">
+        <h2>Menu</h2>
+        <button class="close" type="button" data-close>Close</button>
+      </header>
+      <button class="sound" type="button" aria-pressed="false">Sound off</button>
+      <h3>A few more rules</h3>
+      <ul>
+        <li>One tap is one punch. A shake or a combo does not add extra points.</li>
+        <li>500 punches a day add to the board. After that you can keep punching for fun. Those hits no longer add to the count.</li>
+        <li>Monday at midnight UTC starts a new week. The face does not change just because the week did.</li>
+        <li>The face is chosen by the site and replaced when punching slows.</li>
+      </ul>
+    </div>
+  </dialog>
   <script src="/app.js"></script>
 </body>
 </html>
