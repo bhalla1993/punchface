@@ -26,6 +26,7 @@ const countryMenu = document.querySelector("#country-menu");
 const youFlag = document.querySelector("#you-flag");
 const youName = document.querySelector("#you-name");
 const youWeek = document.querySelector("#you-week");
+const youPlace = document.querySelector("#you-place");
 const youUnit = document.querySelector("#you-unit");
 const tapHint = document.querySelector("#tap-hint");
 const boardHelp = document.querySelector("#board-help");
@@ -107,6 +108,7 @@ soundBtn.addEventListener("click", () => {
   soundOn = !soundOn;
   soundBtn.textContent = soundOn ? "Sound on" : "Sound off";
   soundBtn.setAttribute("aria-pressed", String(soundOn));
+  if (soundOn) smack();
 });
 
 face.addEventListener("pointerdown", (event) => {
@@ -178,7 +180,7 @@ function hit() {
       spark.addEventListener("animationend", () => spark.remove());
     }
   }
-  if (soundOn) beep();
+  if (soundOn) smack();
   if (paused || note.dataset.full === "1") return;
   pending += 1;
   bump(1);
@@ -265,6 +267,7 @@ function render() {
   const weekScore = mine ? mine.score : 0;
   youWeek.textContent = String(weekScore);
   youUnit.textContent = weekScore === 1 ? "punch" : "punches";
+  youPlace.textContent = names[country] || "your country";
   renderDash();
   if (!board) {
     list.replaceChildren();
@@ -344,16 +347,46 @@ async function prepareTurnstile() {
   }
 }
 
-function beep() {
-  const ctx = new AudioContext();
+let audioCtx;
+
+function audio() {
+  if (!audioCtx) audioCtx = new AudioContext();
+  if (audioCtx.state === "suspended") audioCtx.resume();
+  return audioCtx;
+}
+
+function smack() {
+  const ctx = audio();
+  const now = ctx.currentTime;
+  const swing = 0.88 + Math.random() * 0.24;
+
+  const length = Math.floor(ctx.sampleRate * 0.05);
+  const buffer = ctx.createBuffer(1, length, ctx.sampleRate);
+  const data = buffer.getChannelData(0);
+  for (let i = 0; i < length; i += 1) data[i] = (Math.random() * 2 - 1) * (1 - i / length);
+  const noise = ctx.createBufferSource();
+  noise.buffer = buffer;
+  const band = ctx.createBiquadFilter();
+  band.type = "bandpass";
+  band.frequency.value = 1400 * swing;
+  band.Q.value = 0.6;
+  const noiseGain = ctx.createGain();
+  noiseGain.gain.setValueAtTime(0.42, now);
+  noiseGain.gain.exponentialRampToValueAtTime(0.001, now + 0.06);
+  noise.connect(band).connect(noiseGain).connect(ctx.destination);
+  noise.start(now);
+  noise.stop(now + 0.07);
+
   const osc = ctx.createOscillator();
-  const gain = ctx.createGain();
-  osc.frequency.value = 180;
-  gain.gain.value = 0.04;
-  osc.connect(gain).connect(ctx.destination);
-  osc.start();
-  gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.08);
-  osc.stop(ctx.currentTime + 0.09);
+  osc.type = "sine";
+  osc.frequency.setValueAtTime(170 * swing, now);
+  osc.frequency.exponentialRampToValueAtTime(48, now + 0.11);
+  const thump = ctx.createGain();
+  thump.gain.setValueAtTime(0.5, now);
+  thump.gain.exponentialRampToValueAtTime(0.001, now + 0.12);
+  osc.connect(thump).connect(ctx.destination);
+  osc.start(now);
+  osc.stop(now + 0.13);
 }
 
 document.addEventListener("visibilitychange", () => {
