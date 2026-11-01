@@ -52,7 +52,7 @@ const names = Object.fromEntries(COUNTRIES);
 const pow = face.querySelector(".pow");
 const local = location.hostname === "localhost" || location.hostname === "127.0.0.1";
 const params = new URLSearchParams(location.search);
-let country = params.get("country") || sessionStorage.getItem("country") || "CA";
+let country = local ? (params.get("country") || sessionStorage.getItem("country") || "CA") : "";
 let soundOn = false;
 let mode = "weekly";
 let pending = 0;
@@ -125,6 +125,11 @@ tabs.forEach((tab) => {
 });
 
 function paintCountry() {
+  if (!country) {
+    youFlag.textContent = "";
+    youName.textContent = "your country";
+    return;
+  }
   youFlag.textContent = FLAGS[country] || "🌍";
   youName.textContent = names[country] || "Rest of world";
   countryBtn.textContent = `${FLAGS[country] || "🌍"}  ${names[country] || "Rest of world"}`;
@@ -226,7 +231,6 @@ async function flush() {
     apply(await response.json());
   } catch (error) {
     bump(-count);
-    paused = true;
     status.textContent = error.status === 403
       ? "This punch did not count. The browser check did not pass. You can keep punching."
       : "This punch did not reach the board. You can keep punching. It will try again.";
@@ -413,4 +417,4 @@ prepareTurnstile();
 load();
 setInterval(() => {
   if (!document.hidden) load();
-}, 5000);
+}, 15000);

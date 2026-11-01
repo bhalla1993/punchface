@@ -18,11 +18,7 @@ body {
   margin: 0;
   min-height: 100vh;
   color: var(--paper);
-  background:
-    radial-gradient(circle at 50% 250px, var(--ring) 0 210px, transparent 212px),
-    radial-gradient(circle at 8% 88%, color-mix(in srgb, #ff5a3c, #ff3b30 calc(var(--heat) * 100%)) 0 120px, transparent 122px),
-    radial-gradient(circle at 96% 18%, color-mix(in srgb, #7a2a24, #ff3b30 calc(var(--heat) * 80%)) 0 90px, transparent 92px),
-    var(--ground);
+  background: var(--ground);
 }
 
 body::before {
@@ -36,6 +32,7 @@ body::before {
 
 .page {
   position: relative;
+  z-index: 0;
   width: min(480px, 100%);
   margin: 0 auto;
   padding: 18px 16px 40px;
@@ -103,6 +100,19 @@ body::before {
   display: grid;
   justify-items: center;
   margin-top: 18px;
+}
+
+.halo {
+  position: absolute;
+  z-index: -1;
+  left: 50%;
+  top: min(140px, 39vw);
+  width: min(420px, 118vw);
+  height: min(420px, 118vw);
+  transform: translate(-50%, -50%);
+  border-radius: 50%;
+  background: var(--ring);
+  pointer-events: none;
 }
 
 .ring-flash {
@@ -320,7 +330,20 @@ h1, h2, h3 {
 
 .howto h2,
 .board h2,
-.dev h2 { font-size: 1.45rem; }
+.dev h2,
+.legal h1 { font-size: 1.45rem; }
+
+.legal h2 {
+  margin-top: 16px;
+  font-size: 1.15rem;
+}
+
+.legal p {
+  margin: 8px 0 0;
+  line-height: 1.45;
+}
+
+.legal a { color: var(--red); font-weight: 700; }
 
 .steps {
   list-style: none;
@@ -399,7 +422,8 @@ a.menu-btn { text-decoration: none; }
   line-height: 1.4;
 }
 
-.menu-map {
+.menu-map,
+.sheet-link {
   color: var(--ink);
   font-weight: 700;
 }
@@ -581,6 +605,7 @@ a.menu-btn { text-decoration: none; }
 
 .disclaimer { margin: 18px 4px 0; }
 .privacy { margin: 8px 4px 0; }
+.privacy a { color: var(--gold); font-weight: 700; }
 
 footer {
   display: flex;

@@ -38,7 +38,7 @@ const tabs = [...document.querySelectorAll(".tabs button")];
 const punchLink = document.querySelector("a.menu-btn");
 const local = location.hostname === "localhost" || location.hostname === "127.0.0.1";
 const params = new URLSearchParams(location.search);
-let country = params.get("country") || sessionStorage.getItem("country") || "CA";
+let country = local ? (params.get("country") || sessionStorage.getItem("country") || "CA") : "";
 let mode = "weekly";
 let selected = "all";
 let chose = false;
@@ -186,4 +186,6 @@ frame.innerHTML = markup;
 frame.removeAttribute("aria-busy");
 earth = frame.querySelector("svg");
 load();
-setInterval(load, 5000);
+setInterval(() => {
+  if (!document.hidden) load();
+}, 15000);

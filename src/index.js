@@ -58,8 +58,7 @@ async function callBoard(env, request, payload) {
 }
 
 async function turnstileOk(env, request, token) {
-  if (!env.TURNSTILE_SECRET) return true;
-  if (!token) return false;
+  if (!env.TURNSTILE_SECRET || !token) return false;
   const body = new FormData();
   body.set("secret", env.TURNSTILE_SECRET);
   body.set("response", token);
