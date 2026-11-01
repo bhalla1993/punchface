@@ -257,7 +257,7 @@ function apply(data) {
   board = { weekly: data.weekly, alltime: data.alltime };
   note.dataset.full = data.limited ? "1" : "";
   note.textContent = data.limited
-    ? "You can keep punching for fun. These no longer add to the count. This address has used today's punches. They count again at the next UTC day."
+    ? "You can keep punching for fun. These no longer add to the count. This network has used today's punches. People on the same network share that limit. They count again at the next UTC day."
     : "";
   paintCountry();
   render();
