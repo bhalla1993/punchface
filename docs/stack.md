@@ -10,9 +10,9 @@ One Cloudflare account, with no payment method on it.
 
 The page, the script, and the cartoon stills are static files on Cloudflare Workers. Requests for those files are free. The worker runs only for the punch and leaderboard API. The setting that runs the worker before every file stays off.
 
-One Durable Object holds the weekly and all-time country scores. It keeps new punches in memory, saves them every few seconds, and is allowed to sleep when nobody is playing. It does not use a timer that stays awake.
+One Durable Object holds the weekly and all-time country scores. Each counted punch is written to storage before the reply is sent. The object can sleep when nobody is playing, and those scores stay. It does not keep punches in memory to save later, and it does not use a timer that stays awake.
 
-One alarm clears the weekly scores at Monday 12:00 AM UTC. It does not change the face. The maker changes the face by replacing the cartoon and redeploying. There is no admin site. That redeploy clears the weekly scores.
+A daily job at 00:05 UTC deletes address allowances from earlier days. If the Monday date has changed, that job also sets weekly scores back to zero. A punch or a board load does the same check, so the week does not wait for the job. The job does not change the face. The maker changes the face by replacing the cartoon and redeploying. There is no admin site. That redeploy clears the weekly scores.
 
 The visitor’s country comes from Cloudflare’s country header. There is no separate geo service.
 
